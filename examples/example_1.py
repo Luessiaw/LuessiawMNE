@@ -1,1 +1,1 @@
-from LuessiawMNE import *
+from MEGssiaw import *
