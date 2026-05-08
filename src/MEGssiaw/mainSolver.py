@@ -107,4 +107,21 @@ def computeLeadFieldMatrix(sourcePositions:np.ndarray,
     
     return L
 
-
+def computeInverseOperator(L:np.ndarray,regular_param=1e-5,C:np.ndarray=None,CQ:np.ndarray=None):
+    '''由导联场矩阵计算逆算符。
+    L: 导联场矩阵，(N,M) 数组
+    C: 探头通道的协方差，(N,N) 数组
+    CQ: 源通道的协方差，(M,M) 数组
+    regular_param: 正则化参数
+    '''
+    N,M = L.shape
+    if C is None:
+        C = np.eye(N,N)
+    if CQ is None:
+        CQ = np.eye(M,M)
+    
+    LT = L.transpose()
+    Llam = L @ CQ @ LT + regular_param * C
+    Linv = np.linalg.inv(Llam)
+    W = CQ @ LT @ Linv
+    return W
