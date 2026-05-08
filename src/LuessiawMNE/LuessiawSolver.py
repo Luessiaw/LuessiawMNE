@@ -1,14 +1,110 @@
-import numpy as np
+from .exceptions import *
+from .tools import *
+from .maths import *
 import logging
 logger = logging.getLogger(__name__)
 
+import numpy as np
 
 def computeLeadFieldMatrix(sourcePositions:np.ndarray,
                            sourceOrientations:np.ndarray,
                            sensorPositions:np.ndarray,
-                           sensourOrientations:np.ndarray):
+                           sensorOrientations:np.ndarray):
     '''此函数用于构建前向模型矩阵。
-    sourcePositions: (m,3) 数组，表示
+    sourcePositions: (m,3) 数组，表示源空间中各源通道的位置。
+    sourceOrientations: (m,3) 数组，表示各源通道的方向。
+    sensorPositions: (n,3) 数组，表示探头通道空间中各探头通道的位置。
+    sensorOrientations: (n,3) 数组，表示各探头通道的方向。
+    注意，所有参数均以通道为单位，而非以源或探头位置。即若一个源或探头处包含多个通道，则视为多个源或探头。
     '''
+
+    sp = sourcePositions.shape
+    so = sourceOrientations.shape
+    if (sp != so):
+        msg = "源通道的位置与方向数组形状不相同。源通道位置的形状为 %s, 而源通道方向的形状为 %s." % (sp,so)
+        logging.warning(msg)
+        raise LuessiawMNEError(msg)
+    if sp[1] != 3:
+        msg = "源通道数组的第2维度长度应为3, 而当前为 %d." % sp[1]
+        logging.warning(msg)
+        raise LuessiawMNEError(msg)
+
+    sp = sensorPositions.shape
+    so = sensorOrientations.shape
+    if (sp != so):
+        msg = "探头通道的位置与方向数组形状不相同。探头通道位置的形状为 %s, 而探头通道方向的形状为 %s." % (sp,so)
+        logging.warning(msg)
+        raise LuessiawMNEError(msg)
+    if sp[1] != 3:
+        msg = "探头通道数组的第2维度长度应为3, 而当前为 %d." % sp[1]
+        logging.warning(msg)
+        raise LuessiawMNEError(msg)
+
+    numOfSource = sourcePositions.shape[0]
+    numOfSensor = sensorPositions.shape[0]
     
-    pass
+    nsx = sensorOrientations[:,0] # n^s_x
+    nsy = sensorOrientations[:,1] # n^s_y
+    nsz = sensorOrientations[:,2] # n^s_z
+
+    rsx = sensorPositions[:,0] # r^s_x
+    rsy = sensorPositions[:,1] # r^s_y
+    rsz = sensorPositions[:,2] # r^s_z
+
+    npx = sourceOrientations[:,0] # n^p_x
+    npy = sourceOrientations[:,1] # n^p_y
+    npz = sourceOrientations[:,2] # n^p_z
+
+    rpx = sourcePositions[:,0] # r^p_x
+    rpy = sourcePositions[:,1] # r^p_y
+    rpz = sourcePositions[:,2] # r^p_z
+
+    shape = (numOfSensor,numOfSource)
+    nsx = np.broadcast_to(nsx,shape)
+    nsy = np.broadcast_to(nsy,shape)
+    nsz = np.broadcast_to(nsz,shape)
+    
+    rsx = np.broadcast_to(rsx,shape)
+    rsy = np.broadcast_to(rsy,shape)
+    rsz = np.broadcast_to(rsz,shape)
+    sr = np.sqrt(rsx**2+rsy**2+rsz**2)
+    
+    npx = np.broadcast_to(npx,shape)
+    npy = np.broadcast_to(npy,shape)
+    npz = np.broadcast_to(npz,shape)
+    
+    rpx = np.broadcast_to(rpx,shape)
+    rpy = np.broadcast_to(rpy,shape)
+    rpz = np.broadcast_to(rpz,shape)
+    
+    Rx = rsx - rpx
+    Ry = rsy - rpy
+    Rz = rsz - rpz
+    sR = np.sqrt(Rx**2+Ry**2+Rz**2)
+    
+    np_rp_x = npy*rpz - npz*rpy # (n^p_j\times r^p_j)_x
+    np_rp_y = npz*rpx - npx*rpz # (n^p_j\times r^p_j)_y
+    np_rp_z = npx*rpy - npy*rpx # (n^p_j\times r^p_j)_z
+    
+    rdR = rsx*Rx + rsy*Ry + rsz*Rz # r^s_i \cdot R_ij
+    F = sR*(sr*sR+rdR)
+    
+    L1x = np_rp_x/F
+    L1y = np_rp_y/F
+    L1z = np_rp_z/F
+    
+    L2k = rsx*np_rp_x + rsy*np_rp_y + rsz*np_rp_z
+    L2k /= F**2
+    L2x = -((sR**2/sr + sR)*rsx + (2*sr + sR + rdR/sR)*Rx)*L2k
+    L2y = -((sR**2/sr + sR)*rsy + (2*sr + sR + rdR/sR)*Ry)*L2k
+    L2z = -((sR**2/sr + sR)*rsz + (2*sr + sR + rdR/sR)*Rz)*L2k
+    
+    Lx = L1x + L2x
+    Ly = L1y + L2y
+    Lz = L1z + L2z
+    
+    L = nsx*Lx + nsy*Ly + nsz*Lz
+    
+    return L
+
+
