@@ -1,8 +1,7 @@
-__version__ = 25.0309
+__version__ = 26.0508
 __author__ = "Luessiaw"
 
 from .LuessiawSolver import *
-from .exceptions import LuessiawMNEError
 # print("hello")
 import logging
 
