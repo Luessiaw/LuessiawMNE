@@ -60,22 +60,22 @@ def computeLeadFieldMatrix(sourcePositions:np.ndarray,
     rpz = sourcePositions[:,2] # r^p_z
 
     shape = (numOfSensor,numOfSource)
-    nsx = np.broadcast_to(nsx,shape)
-    nsy = np.broadcast_to(nsy,shape)
-    nsz = np.broadcast_to(nsz,shape)
+    nsx = np.broadcast_to(nsx[:,None],shape)
+    nsy = np.broadcast_to(nsy[:,None],shape)
+    nsz = np.broadcast_to(nsz[:,None],shape)
     
-    rsx = np.broadcast_to(rsx,shape)
-    rsy = np.broadcast_to(rsy,shape)
-    rsz = np.broadcast_to(rsz,shape)
+    rsx = np.broadcast_to(rsx[:,None],shape)
+    rsy = np.broadcast_to(rsy[:,None],shape)
+    rsz = np.broadcast_to(rsz[:,None],shape)
     sr = np.sqrt(rsx**2+rsy**2+rsz**2)
     
-    npx = np.broadcast_to(npx,shape)
-    npy = np.broadcast_to(npy,shape)
-    npz = np.broadcast_to(npz,shape)
+    npx = np.broadcast_to(npx[None:,],shape)
+    npy = np.broadcast_to(npy[None:,],shape)
+    npz = np.broadcast_to(npz[None:,],shape)
     
-    rpx = np.broadcast_to(rpx,shape)
-    rpy = np.broadcast_to(rpy,shape)
-    rpz = np.broadcast_to(rpz,shape)
+    rpx = np.broadcast_to(rpx[None:,],shape)
+    rpy = np.broadcast_to(rpy[None:,],shape)
+    rpz = np.broadcast_to(rpz[None:,],shape)
     
     Rx = rsx - rpx
     Ry = rsy - rpy
