@@ -1,7 +1,7 @@
 __version__ = 26.0508
 __author__ = "Luessiaw"
 
-from .LuessiawSolver import *
+from .mainSolver import *
 # print("hello")
 import logging
 
