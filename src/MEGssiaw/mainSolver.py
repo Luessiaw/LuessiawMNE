@@ -104,6 +104,7 @@ def computeLeadFieldMatrix(sourcePositions:np.ndarray,
     Lz = L1z + L2z
     
     L = nsx*Lx + nsy*Ly + nsz*Lz
+    L *= k_mu
     
     return L
 
