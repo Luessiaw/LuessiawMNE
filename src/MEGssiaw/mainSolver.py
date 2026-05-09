@@ -135,3 +135,12 @@ def computeInverseOperator(L:np.ndarray,regular_param=1e-5,C:np.ndarray=None,CQ:
     Linv = np.linalg.inv(Llam)
     W = CQ @ LT @ Linv
     return W
+
+def computeLocRes(rps:np.ndarray,powers:np.ndarray,threshold=0.5):
+    '''评估定位精度及弥散度。目前只针对单个偶极子使用。'''        
+    powers /= np.max(powers)
+    powers[powers<threshold] = 0
+    powers = powers/np.sum(powers)
+    locPos = np.einsum("ij,i->j",rps,powers)
+
+    return locPos
