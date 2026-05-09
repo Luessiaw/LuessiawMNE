@@ -32,7 +32,7 @@ for i,unit in enumerate(["radial",unit_x,unit_y,unit_z]):
     print("Max B: {0:.3f}\t Min B: {1:.3f}".format(np.max(B)*1e12,np.min(B)*1e12))
 
     ax = axs[i]
-    sc = ax.scatter(rss[:,0]*1e2,rss[:,1]*1e2,c=B*1e12,cmap="viridis",vmin=vmin,vmax=vmax)
+    sc = ax.scatter(rss[:,0]*1e2,rss[:,1]*1e2,s=20,c=B*1e12,cmap="viridis",vmin=vmin,vmax=vmax)
     ax.set_xlabel("x (cm)")
     ax.set_xlim([-12,12])
     ax.set_ylim([-12,12])
