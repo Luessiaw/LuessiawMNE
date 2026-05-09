@@ -23,22 +23,22 @@ def computeLeadFieldMatrix(sourcePositions:np.ndarray,
     if (sp != so):
         msg = "源通道的位置与方向数组形状不相同。源通道位置的形状为 %s, 而源通道方向的形状为 %s." % (sp,so)
         logging.warning(msg)
-        raise LuessiawMNEError(msg)
+        raise MEGssiawError(msg)
     if sp[1] != 3:
         msg = "源通道数组的第2维度长度应为3, 而当前为 %d." % sp[1]
         logging.warning(msg)
-        raise LuessiawMNEError(msg)
+        raise MEGssiawError(msg)
 
     sp = sensorPositions.shape
     so = sensorOrientations.shape
     if (sp != so):
         msg = "探头通道的位置与方向数组形状不相同。探头通道位置的形状为 %s, 而探头通道方向的形状为 %s." % (sp,so)
         logging.warning(msg)
-        raise LuessiawMNEError(msg)
+        raise MEGssiawError(msg)
     if sp[1] != 3:
         msg = "探头通道数组的第2维度长度应为3, 而当前为 %d." % sp[1]
         logging.warning(msg)
-        raise LuessiawMNEError(msg)
+        raise MEGssiawError(msg)
 
     numOfSource = sourcePositions.shape[0]
     numOfSensor = sensorPositions.shape[0]
@@ -120,6 +120,15 @@ def computeInverseOperator(L:np.ndarray,regular_param=1e-5,C:np.ndarray=None,CQ:
         C = np.eye(N,N)
     if CQ is None:
         CQ = np.eye(M,M)
+        
+    if C.shape[0] != C.shape[1]:
+        raise MEGssiawError("矩阵 C 不是方阵。当前 C 的形状：", C.shape)
+    if CQ.shape[0] != CQ.shape[1]:
+        raise MEGssiawError("矩阵 CQ 不是方阵。当前 CQ 的形状：", CQ.shape)
+    if C.shape[0] != N:
+        raise MEGssiawError("协方差矩阵 C 的大小与 L 的形状不匹配。当前 C 的维度为：{0:d}, 应为 {1:d}".format(C.shape[0],N))
+    if CQ.shape[0] != M:
+        raise MEGssiawError("协方差矩阵 CQ 的大小与 L 的形状不匹配。当前 CQ 的维度为：{0:d}, 应为 {1:d}".format(CQ.shape[0],M))
     
     LT = L.transpose()
     Llam = L @ CQ @ LT + regular_param * C
