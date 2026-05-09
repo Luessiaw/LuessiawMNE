@@ -23,9 +23,9 @@ for rs in rss:
     ns = rs/np.linalg.norm(rs)
     nss.append(ns)
 nss = np.array(nss)
-# 2. 测量方向沿 x,y,z 轴
 for i,unit in enumerate(["radial",unit_x,unit_y,unit_z]):
     if i:
+        # 2. 测量方向沿 x,y,z 轴
         nss = np.array([unit,]*N)
     L = computeLeadFieldMatrix(rps,nps,rss,nss)
     B = L @ Q
@@ -46,7 +46,6 @@ cbar = fig.colorbar(
     location="right",
     shrink=0.9
 )
-
 cbar.set_label("Measured Value (pT)")
 
 fig.savefig("examples/figs/example_1-MeasuredValue.png",dpi=300)
