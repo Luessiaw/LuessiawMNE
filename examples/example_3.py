@@ -16,4 +16,5 @@ print("Number of grid points: {0:d}".format(grid_point_num))
 
 rps = np.array(fibonacci_half_sphere(grid_point_num))
 
+
 print()

@@ -45,3 +45,16 @@ def fibonacci_half_sphere(M=100):
         points.append(p)
 
     return points
+
+def getSphericalUnitVector(r):
+    '''在r处的三个单位向量'''
+    e1 = r/np.linalg.norm(r)
+    e2 = np.cross(unit_z,e1)
+    if np.linalg.norm(e2) > 1e-5:
+        e2 = e2/np.linalg.norm(e2)
+        e3 = np.cross(e1,e2)
+        e3 = e3/np.linalg.norm(e3)
+    else:
+        e2 = unit_x
+        e3 = unit_y
+    return e1,e2,e3
