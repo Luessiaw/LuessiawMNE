@@ -25,3 +25,23 @@ def fibonacci_sphere(M=100):
         points.append(p)
 
     return points
+
+
+def fibonacci_half_sphere(M=100):
+    '''产生单位上半球面上均匀分布的 M 个点
+    返回 (cos phi sin theta, sin phi sin theta, cos theta)'''
+    gold_ratio = (np.sqrt(5)+1)/2
+    
+    points = []
+    for i in range(M):
+        a = i/gold_ratio
+        a = a - int(a)
+        phi = 2*np.pi*a
+        z = 1 - (2*i+1)/M/2
+        theta = np.arccos(z)
+        p = (np.cos(phi)*np.sin(theta),np.sin(phi)*np.sin(theta),z)
+        p = np.array(p)
+        # p = np.reshape(p,(1,3))
+        points.append(p)
+
+    return points
