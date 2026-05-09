@@ -23,16 +23,16 @@ for rs in rss:
     ns = rs/np.linalg.norm(rs)
     nss.append(ns)
 nss = np.array(nss)
-# 2. 测量方向沿 x,y,z 轴
 for i,unit in enumerate(["radial",unit_x,unit_y,unit_z]):
     if i:
+        # 2. 测量方向沿 x,y,z 轴
         nss = np.array([unit,]*N)
     L = computeLeadFieldMatrix(rps,nps,rss,nss)
     B = L @ Q
     print("Max B: {0:.3f}\t Min B: {1:.3f}".format(np.max(B)*1e12,np.min(B)*1e12))
 
     ax = axs[i]
-    sc = ax.scatter(rss[:,0]*1e2,rss[:,1]*1e2,c=B*1e12,cmap="viridis",vmin=vmin,vmax=vmax)
+    sc = ax.scatter(rss[:,0]*1e2,rss[:,1]*1e2,s=20,c=B*1e12,cmap="viridis",vmin=vmin,vmax=vmax)
     ax.set_xlabel("x (cm)")
     ax.set_xlim([-12,12])
     ax.set_ylim([-12,12])
@@ -46,7 +46,6 @@ cbar = fig.colorbar(
     location="right",
     shrink=0.9
 )
-
 cbar.set_label("Measured Value (pT)")
 
 fig.savefig("examples/figs/example_1-MeasuredValue.png",dpi=300)
